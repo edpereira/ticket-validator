@@ -7,7 +7,7 @@ const QrReader = dynamic(() => import('react-qr-reader'), {
 
 class Index extends Component {
     state = {
-      result: "Aguardando Qr Code",
+      result: process.env.mongo_user,
     };
   
     handleScan = (data) => {
