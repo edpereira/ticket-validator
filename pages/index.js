@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import dynamic from 'next/dynamic'
+import { connectToDatabase } from '../util/mongodb'
 
 const QrReader = dynamic(() => import('react-qr-reader'), {
     ssr: false
 })
-
-console.log("aheoo "+process.env.mongo_user);
 
 class Index extends Component {
     state = {
@@ -38,3 +37,23 @@ class Index extends Component {
   }
   
   export default Index;
+
+  export async function getServerSideProps(context) {
+    const { client } = await connectToDatabase();
+  
+    const isConnected = await client.isConnected();
+
+    const database = client.db(process.env.MONGODB_DB);
+    const collection = database.collection("ingressos");
+
+    try {
+      const ingresso = {nome: "Eduardo Pereira", email: "eduardo.pereira2806@gmail.com"}
+      await collection.insertOne(ingresso);
+    } catch (err) {
+      console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
+    }
+  
+    return {
+      props: { isConnected },
+    }
+  }
